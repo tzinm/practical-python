@@ -3,6 +3,7 @@
 # Exercise 2.4
 
 import csv
+import sys
 
 def read_portfolio(filename):
     portfolio = []
@@ -12,9 +13,10 @@ def read_portfolio(filename):
         rows = csv.reader(f)
         header = next(rows)
         for row in rows:
-            portfolio_dic[header[0]] = row[0]
-            portfolio_dic[header[1]] = int(row[1])
-            portfolio_dic[header[2]] = float(row[2])
+            record = dict(zip(header, row))
+            portfolio_dic['Name'] = record['name']
+            portfolio_dic['Shares'] = int(record['shares'])
+            portfolio_dic['Price'] = float(record['price'])
             portfolio.append(portfolio_dic)
             portfolio_dic = {}
     return portfolio
@@ -55,7 +57,7 @@ def make_report(portfolio, prices):
     result = []
 
     for row in portfolio:
-        linea = (row['name'], row['shares'], prices[row['name']], round(prices[row['name']] - row['price'],2))
+        linea = (row['Name'], row['Shares'], prices[row['Name']], round(prices[row['Name']] - row['Price'],2))
         result.append(linea)
     return result
         
@@ -63,5 +65,5 @@ headers = ('Name', 'Shares', 'Price', 'Change')
 
 print('%10s %10s %10s %10s' % headers)
 print(('-' * 10 + ' ') * len(headers))
-for name, shares, price, change in make_report(read_portfolio('Data/portfolio.csv'), read_prices('Data/prices.csv')):
+for name, shares, price, change in make_report(read_portfolio(sys.argv[1]), read_prices('Data/prices.csv')):
     print(f'{name:>10s} {shares:>10d} {price:>10.2f} {change:>10.2f}')
