@@ -12,11 +12,12 @@ def read_portfolio(filename):
     with open(filename, 'rt') as f:
         rows = csv.reader(f)
         header = next(rows)
+        types = [ str, int, float ]
         for row in rows:
             record = dict(zip(header, row))
-            portfolio_dic['Name'] = record['name']
-            portfolio_dic['Shares'] = int(record['shares'])
-            portfolio_dic['Price'] = float(record['price'])
+            portfolio_dic['Name'] = types[0](record['name'])
+            portfolio_dic['Shares'] = types[1](record['shares'])
+            portfolio_dic['Price'] = types[2](record['price'])
             portfolio.append(portfolio_dic)
             portfolio_dic = {}
     return portfolio
