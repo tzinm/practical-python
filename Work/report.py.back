@@ -4,17 +4,38 @@
 
 import csv
 import sys
-from fileparse import parse_csv
 
 def read_portfolio(filename):
     '''
     Read a stock portfolio file into a list of dictionarires with keys
     name, shares and price.
     '''
-    return parse_csv(filename)
+    portfolio = []
+    portfolio_dic = {}
+    
+    with open(filename, 'rt') as f:
+        rows = csv.reader(f)
+        header = next(rows)
+        types = [ str, int, float ]
+        for row in rows:
+            record = dict(zip(header, row))
+            portfolio_dic['Name'] = types[0](record['name'])
+            portfolio_dic['Shares'] = types[1](record['shares'])
+            portfolio_dic['Price'] = types[2](record['price'])
+            portfolio.append(portfolio_dic)
+            portfolio_dic = {}
+    return portfolio
 
 def read_prices(filename):
-    return parse_csv(filename, has_headers=False)
+    prices = {}
+    try:
+        with open(filename, 'rt') as f:
+            rows = csv.reader(f)
+            for row in rows:
+                prices[row[0]] = float(row[1])
+    except IndexError:
+        pass
+    return prices
 
 def gain_loss(portfolio, prices):
     gain_loss = []
