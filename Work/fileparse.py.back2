@@ -1,0 +1,49 @@
+#fileparse.py
+
+import csv
+
+def parse_csv(filename, columns=None, types=[str, int, float], has_headers=False, selector=',', silence_errors=True):
+    '''
+    Parse a CSV file into a list of records
+    '''
+    if columns and not has_headers:
+        raise RuntimeError('select requires columns headers')
+
+    with open(filename) as f:
+        rows = csv.reader(f, delimiter=selector)
+        
+        #Read the file headers
+        headers = next(rows) if has_headers else []
+
+        if columns:
+            indices = [headers.index(colname) for colname in columns]
+        else:
+            indices = []
+        
+        records = []
+        for rowno, row in enumerate(rows, 1):
+            if not row: #Skip rows with no data
+                continue
+
+            #Filter the row if specific columns were selected
+            if indices:
+                row = [ row[index] for index in indices ]
+
+            #Type conversion
+            if types:
+                try:
+                    row = [conversion(value) for conversion, value in zip(types, row)]            
+                except ValueError as e:
+                    if not silence_errors:
+                        print(f"Row {rowno}: Couldn't convert {row}")
+                        print(f"Row {rowno}: Reason {e}")
+                    continue
+
+            #Make a dictionary
+            if has_headers:
+                record = dict(zip(headers, row))
+            else:
+                record = list(row)
+            records.append(record)
+    
+    return records

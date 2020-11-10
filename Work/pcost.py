@@ -8,10 +8,7 @@ import report
 
 def portfolio_cost(filename):
     portfolio = report.read_portfolio(filename)
-    total_cost = 0
-    for element in portfolio: 
-        total_cost += int(element['shares']) * float(element['price'])
-    return total_cost
+    return portfolio.total_cost
 
 if len(sys.argv) == 2:
    filename = sys.argv[1]
